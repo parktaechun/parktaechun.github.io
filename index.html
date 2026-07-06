@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="영수증 사진을 업로드하면 A4 용지에 자동으로 정렬하고 합계 금액을 계산해 PDF로 저장할 수 있는 무료 온라인 도구. 회원가입과 설치 없이 브라우저에서 바로 사용하세요.">
+<title>영수증 정리 | 영수증 A4 정렬·합계 계산 무료 도구</title>
+<style>
+  /* ===== 디자인 시스템 (당근 · 따뜻한 오렌지) ===== */
+  :root{
+    --primary:#1A1A1A;
+    --primary-dark:#000000;
+    --text:#212124;
+    --sub:#868B94;
+    --bg:#F8F9FA;
+    --surface:#FFFFFF;
+    --border:#EEEEEE;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    background:var(--bg);
+    color:var(--text);
+  }
+  h1,h2,h3{font-weight:700;margin:0;}
+
+  /* 버튼: 둥근 알약 */
+  .btn{
+    border-radius:999px;
+    padding:12px 22px;
+    font-weight:700;
+    font-size:14px;
+    background:var(--primary);
+    color:#fff;
+    border:none;
+    cursor:pointer;
+    transition:.15s;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    white-space:nowrap;
+  }
+  .btn:hover{filter:brightness(.95);}
+  .btn:active{filter:brightness(.88);}
+  .btn.secondary{
+    background:var(--surface);
+    color:var(--text);
+    border:1px solid var(--border);
+  }
+  .btn.secondary:hover{background:#f2f2f2;}
+  .btn.danger{background:var(--surface);color:#D64545;border:1px solid var(--border);}
+  .btn.danger:hover{background:#fdf0f0;}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+
+  .icon{width:18px;height:18px;fill:currentColor;stroke:none;flex-shrink:0;}
+
+  /* ===== 레이아웃 ===== */
+  header{
+    background:var(--surface);
+    border-bottom:1px solid var(--border);
+    padding:16px 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+    position:sticky;
+    top:0;
+    z-index:10;
+  }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand .logo{
+    width:36px;height:36px;border-radius:10px;
+    background:var(--primary);
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;
+  }
+  .brand h1{font-size:18px;}
+  .header-actions{display:flex;gap:8px;flex-wrap:wrap;}
+
+  /* 사이트 내비게이션 */
+  .site-nav{
+    background:var(--primary-dark);
+    padding:0 24px;
+    display:flex;
+    gap:4px;
+    overflow-x:auto;
+  }
+  .site-nav a{
+    color:rgba(255,255,255,.7);
+    text-decoration:none;
+    font-size:13px;
+    font-weight:600;
+    padding:10px 14px;
+    white-space:nowrap;
+    border-bottom:2px solid transparent;
+  }
+  .site-nav a:hover{color:#fff;}
+  .site-nav a.active{color:#fff;border-bottom-color:#fff;}
+
+  .layout{
+    max-width:1280px;
+    margin:0 auto;
+    padding:24px;
+    display:grid;
+    grid-template-columns:400px 1fr;
+    gap:24px;
+    align-items:start;
+  }
+  @media (max-width:900px){
+    .layout{grid-template-columns:1fr;}
+  }
+
+  .panel{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:20px;
+  }
+
+  /* 업로드 영역 */
+  .upload-zone{
+    border:2px dashed var(--border);
+    border-radius:14px;
+    padding:28px 16px;
+    text-align:center;
+    cursor:pointer;
+    transition:.15s;
+    color:var(--sub);
+  }
+  .upload-zone:hover,.upload-zone.dragover{
+    border-color:var(--primary);
+    background:#F2F2F2;
+    color:var(--primary-dark);
+  }
+  .upload-zone .icon{width:32px;height:32px;margin-bottom:8px;}
+  .upload-zone input{display:none;}
+
+  /* 검색/정렬 */
+  .toolbar{display:flex;gap:8px;margin:16px 0;}
+  .search-box{
+    flex:1;
+    position:relative;
+  }
+  .search-box .icon{
+    position:absolute;left:12px;top:50%;transform:translateY(-50%);
+    width:16px;height:16px;color:var(--sub);
+  }
+  .search-box input{
+    width:100%;
+    padding:10px 12px 10px 34px;
+    border:1px solid var(--border);
+    border-radius:999px;
+    font-size:13px;
+    font-family:inherit;
+    background:var(--bg);
+  }
+  .search-box input:focus{outline:2px solid var(--primary);outline-offset:-1px;}
+  select.sort-select{
+    border:1px solid var(--border);
+    border-radius:999px;
+    padding:10px 14px;
+    font-size:13px;
+    font-family:inherit;
+    background:var(--bg);
+    color:var(--text);
+    cursor:pointer;
+  }
+
+  /* 영수증 목록 */
+  .receipt-list{display:flex;flex-direction:column;gap:10px;max-height:520px;overflow-y:auto;}
+  .receipt-item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px;
+    border:1px solid var(--border);
+    border-radius:12px;
+  }
+  .receipt-item img{
+    width:48px;height:48px;object-fit:cover;border-radius:8px;flex-shrink:0;background:var(--bg);
+  }
+  .receipt-item .meta{flex:1;min-width:0;}
+  .receipt-item .meta .name{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .receipt-item .meta .date{font-size:11px;color:var(--sub);}
+  .receipt-item .amount-input{
+    width:96px;
+    padding:8px 10px;
+    border:1px solid var(--border);
+    border-radius:999px;
+    font-size:13px;
+    font-family:inherit;
+    text-align:right;
+  }
+  .receipt-item .amount-input:focus{outline:2px solid var(--primary);outline-offset:-1px;}
+  .receipt-item .del-btn{
+    width:32px;height:32px;
+    border-radius:999px;
+    border:none;
+    background:transparent;
+    color:var(--sub);
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .receipt-item .del-btn:hover{background:#fdf0f0;color:#D64545;}
+
+  .empty-state{text-align:center;color:var(--sub);font-size:13px;padding:24px 0;}
+
+  .total-row{
+    display:flex;justify-content:space-between;align-items:center;
+    margin-top:16px;padding-top:16px;border-top:1px solid var(--border);
+  }
+  .total-row .label{font-size:13px;color:var(--sub);}
+  .total-row .value{font-size:22px;font-weight:700;color:var(--primary-dark);}
+
+  /* A4 미리보기 */
+  .preview-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;}
+  .preview-scroll{
+    display:flex;flex-direction:column;gap:24px;align-items:center;
+    max-height:calc(100vh - 180px);
+    overflow-y:auto;
+    padding:8px;
+    background:#ECEDEF;
+    border-radius:12px;
+  }
+  .a4-page{
+    width:210mm;
+    max-width:100%;
+    aspect-ratio:210/297;
+    background:#fff;
+    box-shadow:0 2px 10px rgba(0,0,0,.12);
+    padding:12mm;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    grid-auto-rows:min-content;
+    gap:8mm;
+    align-content:start;
+  }
+  .a4-page .page-label{
+    grid-column:1/-1;
+    font-size:11px;
+    color:var(--sub);
+    text-align:right;
+    margin-bottom:-4mm;
+  }
+  .a4-receipt{
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:6mm;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4mm;
+  }
+  .a4-receipt img{width:100%;max-height:60mm;object-fit:contain;}
+  .a4-receipt .a4-name{font-size:10px;color:var(--sub);text-align:center;word-break:break-all;}
+  .a4-receipt .a4-amount{font-size:13px;font-weight:700;color:var(--text);}
+
+  /* 인쇄 시 */
+  @media print{
+    body *{visibility:hidden;}
+    .preview-scroll, .preview-scroll *{visibility:visible;}
+    .preview-scroll{
+      position:absolute;left:0;top:0;
+      background:none;padding:0;gap:0;max-height:none;overflow:visible;
+    }
+    .a4-page{
+      box-shadow:none;
+      margin:0;
+      page-break-after:always;
+      width:210mm;height:297mm;aspect-ratio:auto;
+    }
+  }
+</style>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4716663805972995"
+     crossorigin="anonymous"></script>
+</head>
+<body>
+
+<nav class="site-nav">
+  <a href="index.html" class="active">영수증 정리</a>
+  <a href="about.html">소개</a>
+  <a href="privacy.html">개인정보처리방침</a>
+</nav>
+
+<header>
+  <div class="brand">
+    <div class="logo">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M6 2a1 1 0 00-1 1v18a1 1 0 001.4.9L9 20.8l2.6 1.1a1 1 0 00.8 0L15 20.8l2.6 1.1A1 1 0 0019 21V3a1 1 0 00-1-1H6zm2 5h8v2H8V7zm0 4h8v2H8v-2zm0 4h5v2H8v-2z"/></svg>
+    </div>
+    <h1>영수증 정리</h1>
+  </div>
+  <div class="header-actions">
+    <button class="btn secondary" id="clearAllBtn">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M6 7h12l-1 13a2 2 0 01-2 2H9a2 2 0 01-2-2L6 7zm3-3h6l1 2H8l1-2z"/></svg>
+      전체 삭제
+    </button>
+    <button class="btn" id="printBtn">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M6 9V2h12v7h2a1 1 0 011 1v7a1 1 0 01-1 1h-2v3H6v-3H4a1 1 0 01-1-1v-7a1 1 0 011-1h2zm2-5v5h8V4H8zm0 13v3h8v-3H8z"/></svg>
+      PDF로 저장
+    </button>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- 좌측: 업로드 + 목록 -->
+  <div class="panel">
+    <label class="upload-zone" id="uploadZone">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M12 2a1 1 0 011 1v10.6l2.3-2.3a1 1 0 111.4 1.4l-4 4a1 1 0 01-1.4 0l-4-4a1 1 0 111.4-1.4L11 13.6V3a1 1 0 011-1zM4 15a1 1 0 011 1v3h14v-3a1 1 0 112 0v3a2 2 0 01-2 2H5a2 2 0 01-2-2v-3a1 1 0 011-1z"/></svg>
+      <div>영수증 이미지를 드래그하거나 클릭해서 업로드</div>
+      <input type="file" id="fileInput" accept="image/*" multiple>
+    </label>
+
+    <div class="toolbar">
+      <div class="search-box">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M10 2a8 8 0 105.3 14l4.35 4.35a1 1 0 001.4-1.4L16.7 14.6A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z"/></svg>
+        <input type="text" id="searchInput" placeholder="파일명으로 검색">
+      </div>
+      <select class="sort-select" id="sortSelect">
+        <option value="date-desc">최신순</option>
+        <option value="date-asc">오래된순</option>
+        <option value="amount-desc">금액 높은순</option>
+        <option value="amount-asc">금액 낮은순</option>
+        <option value="name-asc">이름순</option>
+      </select>
+    </div>
+
+    <div class="receipt-list" id="receiptList"></div>
+
+    <div class="total-row">
+      <span class="label">합계 금액</span>
+      <span class="value" id="totalValue">0원</span>
+    </div>
+  </div>
+
+  <!-- 우측: A4 미리보기 -->
+  <div class="panel">
+    <div class="preview-header">
+      <h2>A4 정렬 미리보기</h2>
+      <span style="font-size:12px;color:var(--sub);" id="pageCountLabel">0페이지</span>
+    </div>
+    <div class="preview-scroll" id="previewScroll"></div>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'bboggl_receipts';
+  const RECEIPTS_PER_PAGE = 6; // 2열 x 3행
+
+  // 더미 데이터 (최초 1회, 저장된 데이터 없을 때만 채움)
+  const DUMMY_RECEIPTS = [
+    { id: 'd1', name: '샘플_커피.jpg', amount: 4500, date: '2026-07-01T09:12:00', dataUrl: makePlaceholderReceipt('#FFB37A', '커피') },
+    { id: 'd2', name: '샘플_마트.jpg', amount: 23800, date: '2026-07-03T18:40:00', dataUrl: makePlaceholderReceipt('#FF8A3D', '마트') },
+    { id: 'd3', name: '샘플_점심.jpg', amount: 8500, date: '2026-07-05T12:31:00', dataUrl: makePlaceholderReceipt('#FF6F0F', '점심') },
+  ];
+
+  function makePlaceholderReceipt(color, label){
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="280">
+      <rect width="200" height="280" fill="#fff" stroke="${color}" stroke-width="4"/>
+      <rect x="20" y="20" width="160" height="10" fill="${color}"/>
+      <rect x="20" y="45" width="120" height="6" fill="#ddd"/>
+      <rect x="20" y="60" width="140" height="6" fill="#ddd"/>
+      <rect x="20" y="75" width="100" height="6" fill="#ddd"/>
+      <text x="100" y="150" font-size="18" text-anchor="middle" fill="${color}" font-family="sans-serif">${label}</text>
+      <rect x="20" y="240" width="160" height="10" fill="${color}"/>
+    </svg>`;
+    return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+  }
+
+  function loadReceipts(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(raw) return JSON.parse(raw);
+    }catch(e){}
+    return DUMMY_RECEIPTS;
+  }
+
+  function saveReceipts(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.receipts));
+  }
+
+  const state = {
+    receipts: loadReceipts(),
+    search: '',
+    sort: 'date-desc',
+  };
+
+  const els = {
+    uploadZone: document.getElementById('uploadZone'),
+    fileInput: document.getElementById('fileInput'),
+    searchInput: document.getElementById('searchInput'),
+    sortSelect: document.getElementById('sortSelect'),
+    receiptList: document.getElementById('receiptList'),
+    totalValue: document.getElementById('totalValue'),
+    previewScroll: document.getElementById('previewScroll'),
+    pageCountLabel: document.getElementById('pageCountLabel'),
+    clearAllBtn: document.getElementById('clearAllBtn'),
+    printBtn: document.getElementById('printBtn'),
+  };
+
+  function formatWon(n){
+    return n.toLocaleString('ko-KR') + '원';
+  }
+
+  function getFilteredSorted(){
+    let list = state.receipts.filter(r =>
+      r.name.toLowerCase().includes(state.search.toLowerCase())
+    );
+    switch(state.sort){
+      case 'date-desc': list.sort((a,b)=> new Date(b.date)-new Date(a.date)); break;
+      case 'date-asc': list.sort((a,b)=> new Date(a.date)-new Date(b.date)); break;
+      case 'amount-desc': list.sort((a,b)=> b.amount-a.amount); break;
+      case 'amount-asc': list.sort((a,b)=> a.amount-b.amount); break;
+      case 'name-asc': list.sort((a,b)=> a.name.localeCompare(b.name)); break;
+    }
+    return list;
+  }
+
+  function renderList(){
+    const list = getFilteredSorted();
+    els.receiptList.innerHTML = '';
+
+    if(list.length === 0){
+      els.receiptList.innerHTML = '<div class="empty-state">표시할 영수증이 없습니다.</div>';
+    } else {
+      list.forEach(r => {
+        const item = document.createElement('div');
+        item.className = 'receipt-item';
+        item.innerHTML = `
+          <img src="${r.dataUrl}" alt="${r.name}">
+          <div class="meta">
+            <div class="name">${r.name}</div>
+            <div class="date">${new Date(r.date).toLocaleDateString('ko-KR')}</div>
+          </div>
+          <input type="number" class="amount-input" value="${r.amount}" data-id="${r.id}" placeholder="금액">
+          <button class="del-btn" data-id="${r.id}" title="삭제">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M6 7h12l-1 13a2 2 0 01-2 2H9a2 2 0 01-2-2L6 7zm3-3h6l1 2H8l1-2z"/></svg>
+          </button>
+        `;
+        els.receiptList.appendChild(item);
+      });
+    }
+
+    // 합계는 전체(필터 무관)로 계산
+    const total = state.receipts.reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
+    els.totalValue.textContent = formatWon(total);
+
+    renderPreview(list);
+  }
+
+  function renderPreview(list){
+    els.previewScroll.innerHTML = '';
+    if(list.length === 0){
+      els.pageCountLabel.textContent = '0페이지';
+      return;
+    }
+    const pageCount = Math.ceil(list.length / RECEIPTS_PER_PAGE);
+    els.pageCountLabel.textContent = pageCount + '페이지';
+
+    for(let p = 0; p < pageCount; p++){
+      const pageItems = list.slice(p * RECEIPTS_PER_PAGE, (p+1) * RECEIPTS_PER_PAGE);
+      const page = document.createElement('div');
+      page.className = 'a4-page';
+      page.innerHTML = `<div class="page-label">${p+1} / ${pageCount}</div>` +
+        pageItems.map(r => `
+          <div class="a4-receipt">
+            <img src="${r.dataUrl}" alt="${r.name}">
+            <div class="a4-name">${r.name}</div>
+            <div class="a4-amount">${formatWon(Number(r.amount)||0)}</div>
+          </div>
+        `).join('');
+      els.previewScroll.appendChild(page);
+    }
+  }
+
+  // ===== 이벤트 =====
+  els.fileInput.addEventListener('change', e => handleFiles(e.target.files));
+
+  els.uploadZone.addEventListener('dragover', e => { e.preventDefault(); els.uploadZone.classList.add('dragover'); });
+  els.uploadZone.addEventListener('dragleave', () => els.uploadZone.classList.remove('dragover'));
+  els.uploadZone.addEventListener('drop', e => {
+    e.preventDefault();
+    els.uploadZone.classList.remove('dragover');
+    handleFiles(e.dataTransfer.files);
+  });
+
+  function handleFiles(fileList){
+    [...fileList].forEach(file => {
+      if(!file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        state.receipts.push({
+          id: 'r' + Date.now() + Math.random().toString(36).slice(2,7),
+          name: file.name,
+          amount: 0,
+          date: new Date().toISOString(),
+          dataUrl: ev.target.result,
+        });
+        saveReceipts();
+        renderList();
+      };
+      reader.readAsDataURL(file);
+    });
+    els.fileInput.value = '';
+  }
+
+  els.searchInput.addEventListener('input', e => {
+    state.search = e.target.value;
+    renderList();
+  });
+
+  els.sortSelect.addEventListener('change', e => {
+    state.sort = e.target.value;
+    renderList();
+  });
+
+  els.receiptList.addEventListener('input', e => {
+    if(e.target.classList.contains('amount-input')){
+      const id = e.target.dataset.id;
+      const r = state.receipts.find(r => r.id === id);
+      if(r){
+        r.amount = Number(e.target.value) || 0;
+        saveReceipts();
+        // 목록 재렌더링 없이 합계/미리보기만 갱신
+        const total = state.receipts.reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
+        els.totalValue.textContent = formatWon(total);
+        renderPreview(getFilteredSorted());
+      }
+    }
+  });
+
+  els.receiptList.addEventListener('click', e => {
+    const btn = e.target.closest('.del-btn');
+    if(btn){
+      const id = btn.dataset.id;
+      state.receipts = state.receipts.filter(r => r.id !== id);
+      saveReceipts();
+      renderList();
+    }
+  });
+
+  els.clearAllBtn.addEventListener('click', () => {
+    if(confirm('업로드한 모든 영수증을 삭제할까요?')){
+      state.receipts = [];
+      saveReceipts();
+      renderList();
+    }
+  });
+
+  els.printBtn.addEventListener('click', () => window.print());
+
+  renderList();
+</script>
+</body>
+</html>

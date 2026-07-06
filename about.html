@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="영수증 정리 서비스 소개, 사용법 4단계, 활용 사례(경비 정산·세금 신고·프리랜서 지출 관리), 자주 묻는 질문을 안내합니다.">
+<title>소개 | 영수증 정리</title>
+<style>
+  :root{
+    --primary:#1A1A1A;
+    --primary-dark:#000000;
+    --text:#212124;
+    --sub:#868B94;
+    --bg:#F8F9FA;
+    --surface:#FFFFFF;
+    --border:#EEEEEE;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.7;
+  }
+  h1,h2,h3{font-weight:700;margin:0;}
+  a{color:var(--primary-dark);}
+
+  .btn{
+    border-radius:999px;padding:12px 22px;font-weight:700;font-size:14px;
+    background:var(--primary);color:#fff;border:none;cursor:pointer;
+    text-decoration:none;display:inline-flex;align-items:center;gap:6px;
+  }
+  .btn:hover{filter:brightness(1.15);}
+
+  .site-nav{
+    background:var(--primary-dark);padding:0 24px;display:flex;gap:4px;overflow-x:auto;
+  }
+  .site-nav a{
+    color:rgba(255,255,255,.7);text-decoration:none;font-size:13px;font-weight:600;
+    padding:10px 14px;white-space:nowrap;border-bottom:2px solid transparent;
+  }
+  .site-nav a:hover{color:#fff;}
+  .site-nav a.active{color:#fff;border-bottom-color:#fff;}
+
+  header{
+    background:var(--surface);border-bottom:1px solid var(--border);padding:16px 24px;
+    display:flex;align-items:center;gap:10px;
+  }
+  header .logo{
+    width:36px;height:36px;border-radius:10px;background:var(--primary);
+    display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0;
+  }
+  header h1{font-size:18px;}
+  .icon{width:18px;height:18px;fill:currentColor;}
+
+  main{max-width:760px;margin:0 auto;padding:32px 24px 64px;}
+  section{margin-bottom:40px;}
+  section h2{font-size:20px;margin-bottom:12px;}
+  section h3{font-size:15px;margin:20px 0 6px;}
+  section p, section li{font-size:14px;color:var(--text);}
+  .lead{font-size:15px;color:var(--sub);margin-bottom:24px;}
+
+  .steps{display:flex;flex-direction:column;gap:14px;padding:0;list-style:none;margin:0;}
+  .steps li{
+    display:flex;gap:12px;align-items:flex-start;
+    background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;
+  }
+  .steps .num{
+    width:26px;height:26px;border-radius:999px;background:var(--primary);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;
+  }
+
+  .usecase-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media (max-width:600px){.usecase-grid{grid-template-columns:1fr;}}
+  .usecase-card{
+    background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;
+  }
+  .usecase-card h3{margin-top:0;}
+
+  .faq-item{border-bottom:1px solid var(--border);padding:14px 0;}
+  .faq-item:last-child{border-bottom:none;}
+  .faq-item .q{font-weight:700;font-size:14px;margin-bottom:6px;}
+  .faq-item .a{font-size:13px;color:var(--sub);}
+
+  .cta{text-align:center;padding:32px 0 0;}
+</style>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4716663805972995"
+     crossorigin="anonymous"></script>
+</head>
+<body>
+
+<nav class="site-nav">
+  <a href="index.html">영수증 정리</a>
+  <a href="about.html" class="active">소개</a>
+  <a href="privacy.html">개인정보처리방침</a>
+</nav>
+
+<header>
+  <div class="logo">
+    <svg class="icon" viewBox="0 0 24 24"><path d="M6 2a1 1 0 00-1 1v18a1 1 0 001.4.9L9 20.8l2.6 1.1a1 1 0 00.8 0L15 20.8l2.6 1.1A1 1 0 0019 21V3a1 1 0 00-1-1H6zm2 5h8v2H8V7zm0 4h8v2H8v-2zm0 4h5v2H8v-2z"/></svg>
+  </div>
+  <h1>영수증 정리 소개</h1>
+</header>
+
+<main>
+  <p class="lead">
+    "영수증 정리"는 흩어진 영수증 사진을 한 번에 업로드해서 A4 용지에 자동으로 배치하고,
+    합계 금액까지 계산해주는 무료 온라인 도구입니다. 회원가입도, 프로그램 설치도 필요 없습니다.
+  </p>
+
+  <section>
+    <h2>이런 분들께 유용해요</h2>
+    <div class="usecase-grid">
+      <div class="usecase-card">
+        <h3>회사 경비 정산</h3>
+        <p>출장·회식·비품 구매 영수증을 한 장의 A4로 모아 정산 담당자에게 제출할 수 있어요.</p>
+      </div>
+      <div class="usecase-card">
+        <h3>세금 신고 증빙자료</h3>
+        <p>연말정산이나 종합소득세 신고 때 필요한 지출 증빙을 날짜·금액순으로 정리해 보관하세요.</p>
+      </div>
+      <div class="usecase-card">
+        <h3>프리랜서 지출 관리</h3>
+        <p>프로젝트별 재료비·외주비 영수증을 모아두면 나중에 정산할 때 합계를 바로 확인할 수 있어요.</p>
+      </div>
+      <div class="usecase-card">
+        <h3>여행 경비 정리</h3>
+        <p>여행 중 쌓인 영수증을 한 번에 업로드해서 총 지출 금액을 한눈에 확인하세요.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>사용 방법</h2>
+    <ol class="steps">
+      <li><span class="num">1</span><div><strong>영수증 업로드</strong> — 사진을 드래그하거나 클릭해서 여러 장을 한 번에 올려요.</div></li>
+      <li><span class="num">2</span><div><strong>금액 확인/입력</strong> — 목록에서 각 영수증의 금액을 입력하면 합계가 자동으로 계산돼요.</div></li>
+      <li><span class="num">3</span><div><strong>A4 미리보기 확인</strong> — 업로드한 영수증이 A4 용지에 자동으로 정렬된 모습을 바로 확인해요.</div></li>
+      <li><span class="num">4</span><div><strong>PDF로 저장</strong> — "PDF로 저장" 버튼을 누르면 인쇄 대화상자가 열리고, PDF로 저장해서 제출하거나 보관할 수 있어요.</div></li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>왜 이 도구를 쓰나요?</h2>
+    <ul>
+      <li><strong>완전 무료</strong> — 별도 비용이나 유료 결제 없이 사용할 수 있어요.</li>
+      <li><strong>회원가입 불필요</strong> — 이메일이나 개인정보 입력 없이 바로 사용 가능해요.</li>
+      <li><strong>서버에 저장하지 않음</strong> — 업로드한 영수증 이미지는 브라우저(로컬 저장소)에만 저장되고 외부 서버로 전송되지 않아요.</li>
+      <li><strong>설치 불필요</strong> — 앱을 설치하지 않고 웹 브라우저에서 바로 사용할 수 있어요.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>자주 묻는 질문</h2>
+    <div class="faq-item">
+      <div class="q">업로드한 영수증이 서버에 저장되나요?</div>
+      <div class="a">아니요. 업로드한 이미지와 금액 정보는 사용 중인 브라우저의 로컬 저장소(localStorage)에만 저장되며, 외부 서버로 전송되지 않습니다. 다른 브라우저나 기기에서는 보이지 않습니다.</div>
+    </div>
+    <div class="faq-item">
+      <div class="q">금액을 사진에서 자동으로 인식해주나요?</div>
+      <div class="a">현재 버전에서는 각 영수증의 금액을 직접 입력해야 합니다. 자동 인식(OCR) 기능은 추후 업데이트를 검토하고 있습니다.</div>
+    </div>
+    <div class="faq-item">
+      <div class="q">한 번에 여러 장을 업로드할 수 있나요?</div>
+      <div class="a">네, 여러 장의 이미지를 동시에 드래그하거나 선택해서 업로드할 수 있습니다.</div>
+    </div>
+    <div class="faq-item">
+      <div class="q">PDF는 어떻게 저장하나요?</div>
+      <div class="a">"PDF로 저장" 버튼을 누르면 브라우저의 인쇄 대화상자가 열립니다. 프린터 선택 항목에서 "PDF로 저장"을 선택하면 A4로 정렬된 결과가 PDF 파일로 저장됩니다.</div>
+    </div>
+    <div class="faq-item">
+      <div class="q">사진 파일 형식에 제한이 있나요?</div>
+      <div class="a">jpg, png 등 일반적인 이미지 파일 형식을 모두 지원합니다.</div>
+    </div>
+  </section>
+
+  <div class="cta">
+    <a class="btn" href="index.html">영수증 정리 시작하기</a>
+  </div>
+</main>
+
+</body>
+</html>
